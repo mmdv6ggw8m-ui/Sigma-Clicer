@@ -1,1 +1,817 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101b17">
+<title>My Day</title>
 
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 24px 16px 40px;
+    background: #101b17;
+    color: #f1f7f3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.app {
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 32px;
+    margin: 8px 0 5px;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #91a69a;
+    margin-bottom: 26px;
+    font-size: 14px;
+}
+
+.progress-card,
+.tasks-card,
+.stats-card,
+.settings-card {
+    background: #192720;
+    border: 1px solid #2a3c32;
+    border-radius: 22px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.progress-card {
+    text-align: center;
+}
+
+.progress-ring {
+    width: 174px;
+    height: 174px;
+    margin: 5px auto 15px;
+    position: relative;
+}
+
+.progress-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-bg {
+    fill: none;
+    stroke: #2a3b32;
+    stroke-width: 10;
+}
+
+.progress-value {
+    fill: none;
+    stroke: #55d68b;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.percent {
+    font-size: 39px;
+    font-weight: 750;
+}
+
+.progress-label {
+    font-size: 12px;
+    color: #91a69a;
+    margin-top: 3px;
+}
+
+.rating {
+    font-size: 19px;
+    font-weight: 650;
+    color: #65df99;
+}
+
+.task-count {
+    color: #91a69a;
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.task-input-row {
+    display: flex;
+    gap: 9px;
+    margin-bottom: 15px;
+}
+
+input[type="text"] {
+    min-width: 0;
+    flex: 1;
+    background: #101b17;
+    color: white;
+    border: 1px solid #34483b;
+    border-radius: 13px;
+    padding: 13px;
+    outline: none;
+    font-size: 15px;
+}
+
+input[type="text"]:focus {
+    border-color: #55d68b;
+}
+
+.add-btn {
+    width: 48px;
+    border: none;
+    border-radius: 13px;
+    background: #55d68b;
+    color: #102218;
+    font-size: 25px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.task {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 13px 10px;
+    background: #223229;
+    border-radius: 13px;
+    margin-bottom: 9px;
+    min-width: 0;
+}
+
+.task:last-child {
+    margin-bottom: 0;
+}
+
+.task-check {
+    width: 22px;
+    height: 22px;
+    accent-color: #55d68b;
+    flex-shrink: 0;
+}
+
+.task-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+}
+
+.task.done .task-name {
+    text-decoration: line-through;
+    color: #82968a;
+}
+
+.pin-btn,
+.delete-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 19px;
+    padding: 3px;
+    flex-shrink: 0;
+}
+
+.pin-btn {
+    color: #718477;
+}
+
+.pin-btn.active {
+    color: #f1c75b;
+}
+
+.delete-btn {
+    color: #9b7777;
+}
+
+.empty {
+    text-align: center;
+    color: #82968a;
+    font-size: 14px;
+    padding: 18px 5px;
+}.settings-row,
+.stats-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.settings-description {
+    color: #91a69a;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+input[type="time"] {
+    background: #101b17;
+    color: white;
+    border: 1px solid #34483b;
+    border-radius: 10px;
+    padding: 9px;
+    font-size: 14px;
+}
+
+.toggle {
+    width: 53px;
+    height: 30px;
+    border-radius: 30px;
+    background: #405047;
+    position: relative;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.25s;
+}
+
+.toggle::after {
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    left: 3px;
+    top: 3px;
+    transition: transform 0.25s;
+}
+
+.toggle.on {
+    background: #55d68b;
+}
+
+.toggle.on::after {
+    transform: translateX(23px);
+}
+
+.stats-content {
+    margin-top: 18px;
+}
+
+.average {
+    font-size: 30px;
+    font-weight: 750;
+    color: #65df99;
+    margin-bottom: 5px;
+}
+
+.average-caption {
+    font-size: 12px;
+    color: #91a69a;
+    margin-bottom: 20px;
+}
+
+.chart {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    height: 120px;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.chart-day {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    gap: 7px;
+    min-width: 0;
+}
+
+.bar-area {
+    height: 90px;
+    width: 100%;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+}
+
+.bar {
+    width: 100%;
+    max-width: 27px;
+    min-height: 3px;
+    background: #55d68b;
+    border-radius: 7px 7px 3px 3px;
+    transition: height 0.3s;
+}
+
+.bar-label {
+    font-size: 10px;
+    color: #91a69a;
+}
+
+.bar-percent {
+    font-size: 10px;
+    color: #c7d5cc;
+}
+
+.footer {
+    text-align: center;
+    color: #64776b;
+    font-size: 11px;
+    margin-top: 22px;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+    <h1>MY DAY</h1>
+    <div class="subtitle">Твой день под контролем</div>
+
+    <section class="progress-card">
+        <div class="progress-ring">
+            <svg viewBox="0 0 160 160">
+                <circle class="progress-bg" cx="80" cy="80" r="70"></circle>
+                <circle class="progress-value" id="progressCircle" cx="80" cy="80" r="70"></circle>
+            </svg>
+
+            <div class="progress-center">
+                <div class="percent" id="percent">0%</div>
+                <div class="progress-label">выполнено</div>
+            </div>
+        </div>
+
+        <div class="rating" id="rating">Ужасно</div>
+        <div class="task-count" id="taskCount">0 из 0 задач</div>
+    </section>
+
+    <section class="tasks-card">
+        <div class="section-title">Мои задачи</div>
+
+        <div class="task-input-row">
+            <input id="taskInput" type="text" placeholder="Новая задача...">
+            <button class="add-btn" id="addBtn">+</button>
+        </div>
+
+        <div id="taskList"></div>
+    </section>
+
+    <section class="settings-card">
+        <div class="section-title">Настройки</div>
+
+        <div class="settings-row">
+            <div>
+                <strong>Время сброса задач</strong>
+                <div class="settings-description">
+                    В это время начинается новый день
+                </div>
+            </div>
+
+            <input type="time" id="resetTime" value="00:00">
+        </div>
+
+        <div class="settings-description">
+            Закреплённые задачи сохраняются после сброса. Остальные удаляются.
+            Сброс произойдёт при следующем открытии приложения после выбранного времени.
+        </div>
+    </section>
+
+    <section class="stats-card">
+        <div class="stats-heading">
+            <div class="section-title" style="margin:0">Статистика</div>
+            <button class="toggle on" id="statsToggle" aria-label="Показать статистику"></button>
+        </div>
+
+        <div class="stats-content" id="statsContent">
+            <div class="average" id="weeklyAverage">0%</div>
+            <div class="average-caption">Средняя продуктивность за последние 7 дней</div>
+
+            <div class="chart" id="chart"></div>
+        </div>
+    </section>
+
+    <div class="footer">MY DAY · ТВОЙ ЛИЧНЫЙ ПРОГРЕСС</div>
+</div>
+
+<script>
+const STORAGE_KEY = "myday_v3_data";
+
+function getTodayKey() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+}
+
+function createDefaultData() {
+    return {
+        tasks: [],
+        history: {},
+        resetTime: "00:00",
+        statsVisible: true,
+        lastDay: getTodayKey()
+    };
+}
+
+function loadData() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            return { ...createDefaultData(), ...JSON.parse(saved) };
+        }
+    } catch (error) {
+        console.error("Ошибка загрузки:", error);
+    }
+
+    return createDefaultData();
+}
+
+let data = loadData();
+
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getDayStart() {
+    const now = new Date();
+    const [hours, minutes] = data.resetTime.split(":").map(Number);
+
+    now.setHours(hours || 0, minutes || 0, 0, 0);
+
+    if (new Date() < now) {
+        now.setDate(now.getDate() - 1);
+    }
+
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+}
+
+function checkDailyReset() {
+    const currentDay = getDayStart();
+
+    if (data.lastDay !== currentDay) {
+        const total = data.tasks.length;
+        const completed = data.tasks.filter(task => task.done).length;
+        const percent = total ? Math.round(completed / total * 100) : 0;
+
+        if (data.lastDay) {
+            data.history[data.lastDay] = percent;
+        }
+
+        data.tasks = data.tasks
+            .filter(task => task.pinned)
+            .map(task => ({ ...task, done: false }));
+
+        data.lastDay = currentDay;
+        saveData();
+    }
+}
+
+function getProgress() {
+    const total = data.tasks.length;
+    const completed = data.tasks.filter(task => task.done).length;
+    return total ? Math.round(completed / total * 100) : 0;
+}
+
+function getRating(percent) {
+    if (percent < 30) return "Ужасно";
+    if (percent < 50) return "Слабо";
+    if (percent < 70) return "Нормально";
+    if (percent < 90) return "Хорошо";
+    return "Отлично!";
+}
+
+function renderProgress() {
+    const percent = getProgress();
+    const completed = data.tasks.filter(task => task.done).length;
+
+    document.getElementById("percent").textContent = percent + "%";
+    document.getElementById("rating").textContent = getRating(percent);
+    document.getElementById("taskCount").textContent =
+        `${completed} из ${data.tasks.length} задач`;
+
+    const circumference = 440;
+    const offset = circumference - circumference * percent / 100;
+
+    document.getElementById("progressCircle").style.strokeDashoffset = offset;
+}.settings-row,
+.stats-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.settings-description {
+    color: #91a69a;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+input[type="time"] {
+    background: #101b17;
+    color: white;
+    border: 1px solid #34483b;
+    border-radius: 10px;
+    padding: 9px;
+    font-size: 14px;
+}
+
+.toggle {
+    width: 53px;
+    height: 30px;
+    border-radius: 30px;
+    background: #405047;
+    position: relative;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.25s;
+}
+
+.toggle::after {
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    left: 3px;
+    top: 3px;
+    transition: transform 0.25s;
+}
+
+.toggle.on {
+    background: #55d68b;
+}
+
+.toggle.on::after {
+    transform: translateX(23px);
+}
+
+.stats-content {
+    margin-top: 18px;
+}
+
+.average {
+    font-size: 30px;
+    font-weight: 750;
+    color: #65df99;
+    margin-bottom: 5px;
+}
+
+.average-caption {
+    font-size: 12px;
+    color: #91a69a;
+    margin-bottom: 20px;
+}
+
+.chart {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    height: 120px;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.chart-day {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    gap: 7px;
+    min-width: 0;
+}
+
+.bar-area {
+    height: 90px;
+    width: 100%;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+}
+
+.bar {
+    width: 100%;
+    max-width: 27px;
+    min-height: 3px;
+    background: #55d68b;
+    border-radius: 7px 7px 3px 3px;
+    transition: height 0.3s;
+}
+
+.bar-label {
+    font-size: 10px;
+    color: #91a69a;
+}
+
+.bar-percent {
+    font-size: 10px;
+    color: #c7d5cc;
+}
+
+.footer {
+    text-align: center;
+    color: #64776b;
+    font-size: 11px;
+    margin-top: 22px;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+    <h1>MY DAY</h1>
+    <div class="subtitle">Твой день под контролем</div>
+
+    <section class="progress-card">
+        <div class="progress-ring">
+            <svg viewBox="0 0 160 160">
+                <circle class="progress-bg" cx="80" cy="80" r="70"></circle>
+                <circle class="progress-value" id="progressCircle" cx="80" cy="80" r="70"></circle>
+            </svg>
+
+            <div class="progress-center">
+                <div class="percent" id="percent">0%</div>
+                <div class="progress-label">выполнено</div>
+            </div>
+        </div>
+
+        <div class="rating" id="rating">Ужасно</div>
+        <div class="task-count" id="taskCount">0 из 0 задач</div>
+    </section>
+
+    <section class="tasks-card">
+        <div class="section-title">Мои задачи</div>
+
+        <div class="task-input-row">
+            <input id="taskInput" type="text" placeholder="Новая задача...">
+            <button class="add-btn" id="addBtn">+</button>
+        </div>
+
+        <div id="taskList"></div>
+    </section>
+
+    <section class="settings-card">
+        <div class="section-title">Настройки</div>
+
+        <div class="settings-row">
+            <div>
+                <strong>Время сброса задач</strong>
+                <div class="settings-description">
+                    В это время начинается новый день
+                </div>
+            </div>
+
+            <input type="time" id="resetTime" value="00:00">
+        </div>
+
+        <div class="settings-description">
+            Закреплённые задачи сохраняются после сброса. Остальные удаляются.
+            Сброс произойдёт при следующем открытии приложения после выбранного времени.
+        </div>
+    </section>
+
+    <section class="stats-card">
+        <div class="stats-heading">
+            <div class="section-title" style="margin:0">Статистика</div>
+            <button class="toggle on" id="statsToggle" aria-label="Показать статистику"></button>
+        </div>
+
+        <div class="stats-content" id="statsContent">
+            <div class="average" id="weeklyAverage">0%</div>
+            <div class="average-caption">Средняя продуктивность за последние 7 дней</div>
+
+            <div class="chart" id="chart"></div>
+        </div>
+    </section>
+
+    <div class="footer">MY DAY · ТВОЙ ЛИЧНЫЙ ПРОГРЕСС</div>
+</div>
+
+<script>
+const STORAGE_KEY = "myday_v3_data";
+
+function getTodayKey() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+}
+
+function createDefaultData() {
+    return {
+        tasks: [],
+        history: {},
+        resetTime: "00:00",
+        statsVisible: true,
+        lastDay: getTodayKey()
+    };
+}
+
+function loadData() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            return { ...createDefaultData(), ...JSON.parse(saved) };
+        }
+    } catch (error) {
+        console.error("Ошибка загрузки:", error);
+    }
+
+    return createDefaultData();
+}
+
+let data = loadData();
+
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getDayStart() {
+    const now = new Date();
+    const [hours, minutes] = data.resetTime.split(":").map(Number);
+
+    now.setHours(hours || 0, minutes || 0, 0, 0);
+
+    if (new Date() < now) {
+        now.setDate(now.getDate() - 1);
+    }
+
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+}
+
+function checkDailyReset() {
+    const currentDay = getDayStart();
+
+    if (data.lastDay !== currentDay) {
+        const total = data.tasks.length;
+        const completed = data.tasks.filter(task => task.done).length;
+        const percent = total ? Math.round(completed / total * 100) : 0;
+
+        if (data.lastDay) {
+            data.history[data.lastDay] = percent;
+        }
+
+        data.tasks = data.tasks
+            .filter(task => task.pinned)
+            .map(task => ({ ...task, done: false }));
+
+        data.lastDay = currentDay;
+        saveData();
+    }
+}
+
+function getProgress() {
+    const total = data.tasks.length;
+    const completed = data.tasks.filter(task => task.done).length;
+    return total ? Math.round(completed / total * 100) : 0;
+}
+
+function getRating(percent) {
+    if (percent < 30) return "Ужасно";
+    if (percent < 50) return "Слабо";
+    if (percent < 70) return "Нормально";
+    if (percent < 90) return "Хорошо";
+    return "Отлично!";
+}
+
+function renderProgress() {
+    const percent = getProgress();
+    const completed = data.tasks.filter(task => task.done).length;
+
+    document.getElementById("percent").textContent = percent + "%";
+    document.getElementById("rating").textContent = getRating(percent);
+    document.getElementById("taskCount").textContent =
+        `${completed} из ${data.tasks.length} задач`;
+
+    const circumference = 440;
+    const offset = circumference - circumference * percent / 100;
+
+    document.getElementById("progressCircle").style.strokeDashoffset = offset;
+}
