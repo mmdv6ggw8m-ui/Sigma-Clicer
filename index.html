@@ -1,1 +1,1108 @@
-
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101b17">
+<title>MY DAY</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 24px 16px 40px;
+    background: #101b17;
+    color: #f1f7f3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.app {
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto;
+}
+h1 {
+    text-align: center;
+    font-size: 32px;
+    margin: 8px 0 5px;
+    letter-spacing: -1px;
+}
+.subtitle {
+    text-align: center;
+    color: #91a69a;
+    margin-bottom: 26px;
+    font-size: 14px;
+}
+.progress-card,
+.tasks-card,
+.stats-card,
+.settings-card,
+.goal-card {
+    background: #192720;
+    border: 1px solid #2a3c32;
+    border-radius: 22px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+.progress-card {
+    text-align: center;
+}
+.progress-ring {
+    width: 174px;
+    height: 174px;
+    margin: 5px auto 15px;
+    position: relative;
+}
+.progress-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+.progress-bg {
+    fill: none;
+    stroke: #2a3b32;
+    stroke-width: 10;
+}
+.progress-value {
+    fill: none;
+    stroke: #55d68b;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    transition: stroke-dashoffset 0.5s ease;
+}
+.progress-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.percent {
+    font-size: 39px;
+    font-weight: 750;
+}
+.progress-label {
+    font-size: 12px;
+    color: #91a69a;
+    margin-top: 3px;
+}
+.rating {
+    font-size: 19px;
+    font-weight: 650;
+    color: #65df99;
+}
+.task-count {
+    color: #91a69a;
+    font-size: 13px;
+    margin-top: 7px;
+}
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+.task-input-row {
+    display: flex;
+    gap: 9px;
+    margin-bottom: 15px;
+}
+input[type="text"],
+input[type="number"] {
+    min-width: 0;
+    background: #101b17;
+    color: white;
+    border: 1px solid #34483b;
+    border-radius: 13px;
+    padding: 13px;
+    outline: none;
+    font-size: 15px;
+}
+input[type="text"] {
+    flex: 1;
+}
+input:focus {
+    border-color: #55d68b;
+}
+.add-btn {
+    width: 48px;
+    border: none;
+    border-radius: 13px;
+    background: #55d68b;
+    color: #102218;
+    font-size: 25px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.task {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 13px 10px;
+    background: #223229;
+    border-radius: 13px;
+    margin-bottom: 9px;
+    min-width: 0;
+}
+.task:last-child {
+    margin-bottom: 0;
+}
+.task-check {
+    width: 22px;
+    height: 22px;
+    accent-color: #55d68b;
+    flex-shrink: 0;
+}
+.task-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+}
+.task.done .task-name {
+    text-decoration: line-through;
+    color: #82968a;
+}
+.pin-btn,
+.delete-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 19px;
+    padding: 3px;
+    flex-shrink: 0;
+}
+.pin-btn {
+    color: #718477;
+}
+.pin-btn.active {
+    color: #f1c75b;
+}
+.delete-btn {
+    color: #9b7777;
+}
+.empty {
+    text-align: center;
+    color: #82968a;
+    font-size: 14px;
+    padding: 18px 5px;
+}
+/* ЦЕЛЬ */
+.goal-card {
+    text-align: center;
+}
+.goal-description {
+    color: #91a69a;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+.human-container {
+    width: 130px;
+    height: 225px;
+    margin: 5px auto 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.human-svg {
+    width: 115px;
+    height: 220px;
+    overflow: visible;
+}
+.human-base {
+    fill: #34473b;
+}
+.human-fill {
+    fill: var(--human-color, #ef5350);
+    transition: fill 0.5s ease;
+}
+.human-fill-group {
+    clip-path: url(#humanClip);
+}
+.goal-percent {
+    font-size: 31px;
+    font-weight: 750;
+    color: #ef5350;
+    margin-top: 5px;
+    transition: color 0.5s ease;
+}
+.goal-count {
+    color: #c5d3c9;
+    font-size: 14px;
+    margin-top: 5px;
+}
+.goal-caption {
+    color: #91a69a;
+    font-size: 12px;
+    margin-top: 5px;
+}
+.goal-settings {
+    margin-top: 19px;
+    padding-top: 17px;
+    border-top: 1px solid #304137;
+}
+.goal-settings-title {
+    font-size: 13px;
+    color: #c6d5cb;
+    margin-bottom: 11px;
+}
+.goal-presets {
+    display: flex;
+    gap: 9px;
+    margin-bottom: 12px;
+}
+.goal-preset {
+    flex: 1;
+    padding: 10px;
+    border-radius: 11px;
+    border: 1px solid #405449;
+    background: #223229;
+    color: #dce8df;
+    font-size: 13px;
+    cursor: pointer;
+}
+.goal-preset.active {
+    background: #294b37;
+    border-color: #55d68b;
+    color: #70e5a0;
+}
+.goal-custom-row {
+    display: flex;
+    gap: 9px;
+}
+.goal-custom-row input {
+    flex: 1;
+    width: 100%;
+    font-size: 14px;
+}
+.goal-save {
+    border: none;
+    border-radius: 11px;
+    background: #55d68b;
+    color: #102218;
+    padding: 0 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+/* НАСТРОЙКИ */
+.settings-row,
+.stats-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.settings-description {
+    color: #91a69a;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+input[type="time"] {
+    background: #101b17;
+    color: white;
+    border: 1px solid #34483b;
+    border-radius: 10px;
+    padding: 9px;
+    font-size: 14px;
+}
+.toggle {
+    width: 53px;
+    height: 30px;
+    border-radius: 30px;
+    background: #405047;
+    position: relative;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.25s;
+}
+.toggle::after {
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    left: 3px;
+    top: 3px;
+    transition: transform 0.25s;
+}
+.toggle.on {
+    background: #55d68b;
+}
+.toggle.on::after {
+    transform: translateX(23px);
+}
+/* СТАТИСТИКА */
+.stats-content {
+    margin-top: 18px;
+}
+.average {
+    font-size: 30px;
+    font-weight: 750;
+    color: #65df99;
+    margin-bottom: 5px;
+}
+.average-caption {
+    font-size: 12px;
+    color: #91a69a;
+    margin-bottom: 20px;
+}
+.chart {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    height: 120px;
+    gap: 8px;
+    padding-top: 8px;
+}
+.chart-day {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    gap: 7px;
+    min-width: 0;
+}
+.bar-area {
+    height: 90px;
+    width: 100%;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+}
+.bar {
+    width: 100%;
+    max-width: 27px;
+    min-height: 3px;
+    background: #55d68b;
+    border-radius: 7px 7px 3px 3px;
+    transition: height 0.3s;
+}
+.bar-label {
+    font-size: 10px;
+    color: #91a69a;
+}
+.bar-percent {
+    font-size: 10px;
+    color: #c7d5cc;
+}
+.footer {
+    text-align: center;
+    color: #64776b;
+    font-size: 11px;
+    margin-top: 22px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+    <h1>MY DAY</h1>
+    <div class="subtitle">Твой день под контролем</div>
+    <!-- ПРОДУКТИВНОСТЬ ЗА ДЕНЬ -->
+    <section class="progress-card">
+        <div class="progress-ring">
+            <svg viewBox="0 0 160 160">
+                <circle class="progress-bg"
+                    cx="80" cy="80" r="70"></circle>
+                <circle class="progress-value"
+                    id="progressCircle"
+                    cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div class="progress-center">
+                <div class="percent" id="percent">0%</div>
+                <div class="progress-label">выполнено</div>
+            </div>
+        </div>
+        <div class="rating" id="rating">Ужасно</div>
+        <div class="task-count" id="taskCount">0 из 0 задач</div>
+    </section>
+    <!-- ЗАДАЧИ -->
+    <section class="tasks-card">
+        <div class="section-title">Мои задачи</div>
+        <div class="task-input-row">
+            <input id="taskInput"
+                type="text"
+                placeholder="Новая задача..."
+                maxlength="150">
+            <button class="add-btn"
+                id="addBtn"
+                type="button">+</button>
+        </div>
+        <div id="taskList"></div>
+    </section>
+    <!-- НОВАЯ СИСТЕМА ЦЕЛЕЙ -->
+    <section class="goal-card">
+        <div class="section-title">Моя цель</div>
+        <div class="goal-description">
+            Выполняй задачи и заполняй человечка.
+            Двигайся к своей большой цели!
+        </div>
+        <div class="human-container">
+            <svg class="human-svg"
+                viewBox="0 0 120 240"
+                xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <clipPath id="humanClip">
+                        <circle cx="60" cy="27" r="19"/>
+                        <path d="
+                            M43 54
+                            Q60 48 77 54
+                            L83 112
+                            L77 147
+                            L89 224
+                            Q90 233 81 233
+                            L72 233
+                            L59 160
+                            L48 233
+                            L37 233
+                            Q29 232 31 224
+                            L42 147
+                            L37 112
+                            Z
+                            M42 57
+                            L22 119
+                            Q18 128 25 132
+                            Q31 135 35 126
+                            L54 77
+                            Z
+                            M78 57
+                            L98 119
+                            Q102 128 95 132
+                            Q89 135 85 126
+                            L66 77
+                            Z
+                        "/>
+                    </clipPath>
+                </defs>
+                <!-- Силуэт -->
+                <g class="human-base">
+                    <circle cx="60" cy="27" r="19"/>
+                    <path d="
+                        M43 54
+                        Q60 48 77 54
+                        L83 112
+                        L77 147
+                        L89 224
+                        Q90 233 81 233
+                        L72 233
+                        L59 160
+                        L48 233
+                        L37 233
+                        Q29 232 31 224
+                        L42 147
+                        L37 112
+                        Z
+                        M42 57
+                        L22 119
+                        Q18 128 25 132
+                        Q31 135 35 126
+                        L54 77
+                        Z
+                        M78 57
+                        L98 119
+                        Q102 128 95 132
+                        Q89 135 85 126
+                        L66 77
+                        Z
+                    "/>
+                </g>
+                <!-- Заполнение -->
+                <g class="human-fill-group">
+                    <g class="human-fill" id="humanFill">
+                        <circle cx="60" cy="27" r="19"/>
+                        <path d="
+                            M43 54
+                            Q60 48 77 54
+                            L83 112
+                            L77 147
+                            L89 224
+                            Q90 233 81 233
+                            L72 233
+                            L59 160
+                            L48 233
+                            L37 233
+                            Q29 232 31 224
+                            L42 147
+                            L37 112
+                            Z
+                            M42 57
+                            L22 119
+                            Q18 128 25 132
+                            Q31 135 35 126
+                            L54 77
+                            Z
+                            M78 57
+                            L98 119
+                            Q102 128 95 132
+                            Q89 135 85 126
+                            L66 77
+                            Z
+                        "/>
+                    </g>
+                    <rect id="humanWater"
+                        x="0"
+                        y="240"
+                        width="120"
+                        height="0"
+                        fill="#101b17"
+                        opacity="0"/>
+                </g>
+            </svg>
+        </div>
+        <div class="goal-percent" id="goalPercent">0%</div>
+        <div class="goal-count" id="goalCount">
+            0 / 100 задач
+        </div>
+        <div class="goal-caption" id="goalCaption">
+            Начни свой путь!
+        </div>
+        <div class="goal-settings">
+            <div class="goal-settings-title">
+                Установить количество задач
+            </div>
+            <div class="goal-presets">
+                <button class="goal-preset active"
+                    type="button"
+                    data-goal="100">100 задач</button>
+                <button class="goal-preset"
+                    type="button"
+                    data-goal="1000">1000 задач</button>
+            </div>
+            <div class="goal-custom-row">
+                <input type="number"
+                    id="goalInput"
+                    min="1"
+                    max="1000000"
+                    placeholder="Своя цель">
+                <button class="goal-save"
+                    type="button"
+                    id="goalSave">Установить</button>
+            </div>
+        </div>
+    </section>
+    <!-- НАСТРОЙКИ -->
+    <section class="settings-card">
+        <div class="section-title">Настройки</div>
+        <div class="settings-row">
+            <div>
+                <strong>Время сброса задач</strong>
+                <div class="settings-description">
+                    В это время начинается новый день
+                </div>
+            </div>
+            <input type="time"
+                id="resetTime"
+                value="00:00">
+        </div>
+        <div class="settings-description">
+            Закреплённые задачи сохраняются после сброса.
+            Остальные удаляются.
+            Сброс произойдёт при следующем открытии
+            приложения после выбранного времени.
+        </div>
+    </section>
+    <!-- СТАТИСТИКА -->
+    <section class="stats-card">
+        <div class="stats-heading">
+            <div class="section-title" style="margin:0">
+                Статистика
+            </div>
+            <button class="toggle on"
+                id="statsToggle"
+                type="button"
+                aria-label="Показать статистику"
+                aria-pressed="true"></button>
+        </div>
+        <div class="stats-content" id="statsContent">
+            <div class="average" id="weeklyAverage">0%</div>
+            <div class="average-caption">
+                Средняя продуктивность за последние 7 дней
+            </div>
+            <div class="chart" id="chart"></div>
+        </div>
+    </section>
+    <div class="footer">
+        MY DAY · ТВОЙ ЛИЧНЫЙ ПРОГРЕСС
+    </div>
+</div>
+<script>
+/* ОСНОВНЫЕ ДАННЫЕ */
+const STORAGE_KEY = "myday_v3_data";
+function getTodayKey() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+}
+function createDefaultData() {
+    return {
+        tasks: [],
+        history: {},
+        resetTime: "00:00",
+        statsVisible: true,
+        lastDay: getTodayKey(),
+        totalCompleted: 0,
+        goal: 100
+    };
+}
+/* ЗАГРУЗКА И СОХРАНЕНИЕ */
+function loadData() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            const defaults = createDefaultData();
+            const result = {
+                ...defaults,
+                ...parsed
+            };
+            if (!Array.isArray(result.tasks)) {
+                result.tasks = [];
+            }
+            if (!result.history || typeof result.history !== "object") {
+                result.history = {};
+            }
+            if (!result.resetTime) {
+                result.resetTime = "00:00";
+            }
+            // Перенос старых данных
+            if (typeof parsed.totalCompleted !== "number") {
+                result.totalCompleted =
+                    result.tasks.filter(task => task.done).length;
+            }
+            if (!Number.isFinite(result.goal) || result.goal < 1) {
+                result.goal = 100;
+            }
+            result.tasks = result.tasks.map((task, index) => ({
+                id: task.id || String(index),
+                name: String(task.name || ""),
+                done: Boolean(task.done),
+                pinned: Boolean(task.pinned)
+            }));
+            return result;
+        }
+    } catch (error) {
+        console.error("Ошибка загрузки:", error);
+    }
+    return createDefaultData();
+}
+let data = loadData();
+function saveData() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+        console.error("Ошибка сохранения:", error);
+    }
+}
+/* ЕЖЕДНЕВНЫЙ СБРОС */
+function getDayStart() {
+    const now = new Date();
+    const [hours, minutes] = data.resetTime
+        .split(":")
+        .map(Number);
+    const reset = new Date(now);
+    reset.setHours(hours, minutes, 0, 0);
+    if (now < reset) {
+        reset.setDate(reset.getDate() - 1);
+    }
+    return `${reset.getFullYear()}-${String(reset.getMonth()+1).padStart(2,"0")}-${String(reset.getDate()).padStart(2,"0")}`;
+}
+function checkDailyReset() {
+    const currentDay = getDayStart();
+    if (data.lastDay !== currentDay) {
+        const total = data.tasks.length;
+        const completed = data.tasks.filter(
+            task => task.done
+        ).length;
+        const percent = total
+            ? Math.round(completed / total * 100)
+            : 0;
+        if (data.lastDay) {
+            data.history[data.lastDay] = percent;
+        }
+        data.tasks = data.tasks
+            .filter(task => task.pinned)
+            .map(task => ({
+                ...task,
+                done: false
+            }));
+        data.lastDay = currentDay;
+        saveData();
+    }
+}
+/* ПРОДУКТИВНОСТЬ */
+function getProgress() {
+    const total = data.tasks.length;
+    const completed = data.tasks.filter(
+        task => task.done
+    ).length;
+    return total
+        ? Math.round(completed / total * 100)
+        : 0;
+}
+function getRating(percent) {
+    if (percent < 30) return "Ужасно";
+    if (percent < 50) return "Слабо";
+    if (percent < 70) return "Нормально";
+    if (percent < 90) return "Хорошо";
+    return "Отлично!";
+}
+function renderProgress() {
+    const percent = getProgress();
+    const completed = data.tasks.filter(
+        task => task.done
+    ).length;
+    document.getElementById("percent").textContent =
+        percent + "%";
+    document.getElementById("rating").textContent =
+        getRating(percent);
+    document.getElementById("taskCount").textContent =
+        `${completed} из ${data.tasks.length} задач`;
+    const circumference = 440;
+    const offset = circumference -
+        circumference * percent / 100;
+    document.getElementById(
+        "progressCircle"
+    ).style.strokeDashoffset = offset;
+}
+/* ДОБАВЛЕНИЕ ЗАДАЧ */
+function addTask() {
+    const input = document.getElementById("taskInput");
+    const name = input.value.trim();
+    if (!name) {
+        input.focus();
+        return;
+    }
+    data.tasks.push({
+        id: Date.now().toString() +
+            Math.random().toString(36).slice(2),
+        name: name,
+        done: false,
+        pinned: false
+    });
+    input.value = "";
+    saveData();
+    renderAll();
+    input.focus();
+}
+document.getElementById("addBtn").addEventListener(
+    "click",
+    addTask
+);
+document.getElementById("taskInput").addEventListener(
+    "keydown",
+    event => {
+        if (event.key === "Enter") {
+            addTask();
+        }
+    }
+);
+/* ОТОБРАЖЕНИЕ ЗАДАЧ */
+function renderTasks() {
+    const list = document.getElementById("taskList");
+    list.innerHTML = "";
+    if (data.tasks.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Пока нет задач. Добавь первую!";
+        list.appendChild(empty);
+        return;
+    }
+    data.tasks.forEach(task => {
+        const row = document.createElement("div");
+        row.className = "task" +
+            (task.done ? " done" : "");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "task-check";
+        checkbox.checked = task.done;
+        checkbox.dataset.action = "check";
+        checkbox.dataset.id = task.id;
+        const name = document.createElement("div");
+        name.className = "task-name";
+        name.textContent = task.name;
+        const pin = document.createElement("button");
+        pin.type = "button";
+        pin.className = "pin-btn" +
+            (task.pinned ? " active" : "");
+        pin.textContent = "📌";
+        pin.dataset.action = "pin";
+        pin.dataset.id = task.id;
+        pin.setAttribute("aria-label", "Закрепить задачу");
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "delete-btn";
+        remove.textContent = "×";
+        remove.dataset.action = "delete";
+        remove.dataset.id = task.id;
+        remove.setAttribute("aria-label", "Удалить задачу");
+        row.appendChild(checkbox);
+        row.appendChild(name);
+        row.appendChild(pin);
+        row.appendChild(remove);
+        list.appendChild(row);
+    });
+}
+/* ОБРАБОТКА КНОПОК ЗАДАЧ */
+document.getElementById("taskList").addEventListener(
+    "click",
+    event => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const id = button.dataset.id;
+        const task = data.tasks.find(
+            item => item.id === id
+        );
+        if (!task) return;
+        const action = button.dataset.action;
+        if (action === "pin") {
+            task.pinned = !task.pinned;
+        }
+        if (action === "delete") {
+            data.tasks = data.tasks.filter(
+                item => item.id !== id
+            );
+        }
+        saveData();
+        renderAll();
+    }
+);
+document.getElementById("taskList").addEventListener(
+    "change",
+    event => {
+        if (event.target.dataset.action !== "check") {
+            return;
+        }
+        const id = event.target.dataset.id;
+        const task = data.tasks.find(
+            item => item.id === id
+        );
+        if (!task) return;
+        const wasDone = task.done;
+        task.done = event.target.checked;
+        // Общий прогресс достижений.
+        // Повторное снятие галочки не отнимает уже заработанный прогресс.
+        if (!wasDone && task.done) {
+            data.totalCompleted++;
+        }
+        saveData();
+        renderAll();
+    }
+);
+/* СИСТЕМА ЦЕЛЕЙ И ЧЕЛОВЕЧЕК */
+function getHumanColor(percent) {
+    const red = [239, 83, 80];
+    const yellow = [244, 197, 66];
+    const green = [85, 214, 139];
+    let start;
+    let end;
+    let ratio;
+    if (percent < 50) {
+        start = red;
+        end = yellow;
+        ratio = percent / 50;
+    } else {
+        start = yellow;
+        end = green;
+        ratio = (percent - 50) / 50;
+    }
+    const result = start.map((value, index) =>
+        Math.round(value + (end[index] - value) * ratio)
+    );
+    return `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
+}
+function renderGoal() {
+    const goal = data.goal;
+    const completed = data.totalCompleted;
+    const percent = Math.min(
+        100,
+        Math.round(completed / goal * 100)
+    );
+    const color = getHumanColor(percent);
+    const fill = document.getElementById("humanFill");
+    // Заполнение снизу вверх
+    const fillHeight = 240 * percent / 100;
+    fill.setAttribute(
+        "transform",
+        `translate(0 ${240 - fillHeight})`
+    );
+    document.getElementById(
+        "goalPercent"
+    ).textContent = percent + "%";
+    document.getElementById(
+        "goalPercent"
+    ).style.color = color;
+    document.querySelector(
+        ".human-svg"
+    ).style.setProperty("--human-color", color);
+    document.getElementById(
+        "goalCount"
+    ).textContent = `${completed} / ${goal} задач`;
+    const caption = document.getElementById("goalCaption");
+    if (percent === 100) {
+        caption.textContent = "Цель достигнута! Отличная работа!";
+    } else if (percent >= 75) {
+        caption.textContent = "Почти готово! Осталось совсем немного!";
+    } else if (percent >= 40) {
+        caption.textContent = "Отличный прогресс! Продолжай!";
+    } else if (percent > 0) {
+        caption.textContent = "Ты уже начал свой путь!";
+    } else {
+        caption.textContent = "Начни свой путь!";
+    }
+    document.querySelectorAll(".goal-preset").forEach(
+        button => {
+            button.classList.toggle(
+                "active",
+                Number(button.dataset.goal) === goal
+            );
+        }
+    );
+    document.getElementById("goalInput").value = goal;
+}
+/* ВЫБОР ГОТОВОЙ ЦЕЛИ */
+document.querySelectorAll(".goal-preset").forEach(
+    button => {
+        button.addEventListener("click", () => {
+            data.goal = Number(button.dataset.goal);
+            saveData();
+            renderGoal();
+        });
+    }
+);
+/* СОБСТВЕННАЯ ЦЕЛЬ */
+function setCustomGoal() {
+    const input = document.getElementById("goalInput");
+    const goal = Number(input.value);
+    if (
+        !Number.isInteger(goal) ||
+        goal < 1 ||
+        goal > 1000000
+    ) {
+        input.focus();
+        return;
+    }
+    data.goal = goal;
+    saveData();
+    renderGoal();
+}
+document.getElementById("goalSave").addEventListener(
+    "click",
+    setCustomGoal
+);
+document.getElementById("goalInput").addEventListener(
+    "keydown",
+    event => {
+        if (event.key === "Enter") {
+            setCustomGoal();
+        }
+    }
+);
+/* ВРЕМЯ СБРОСА */
+document.getElementById("resetTime").addEventListener(
+    "change",
+    event => {
+        data.resetTime = event.target.value || "00:00";
+        checkDailyReset();
+        saveData();
+        renderAll();
+    }
+);
+/* ПЕРЕКЛЮЧАТЕЛЬ СТАТИСТИКИ */
+const statsToggle = document.getElementById("statsToggle");
+statsToggle.addEventListener("click", () => {
+    data.statsVisible = !data.statsVisible;
+    saveData();
+    renderStatsVisibility();
+});
+function renderStatsVisibility() {
+    const content = document.getElementById("statsContent");
+    content.style.display = data.statsVisible
+        ? "block"
+        : "none";
+    statsToggle.classList.toggle(
+        "on",
+        data.statsVisible
+    );
+    statsToggle.setAttribute(
+        "aria-pressed",
+        String(data.statsVisible)
+    );
+}
+/* СТАТИСТИКА ЗА 7 ДНЕЙ */
+function renderStats() {
+    const chart = document.getElementById("chart");
+    chart.innerHTML = "";
+    const today = getDayStart();
+    const values = [];
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date(
+            today + "T12:00:00"
+        );
+        date.setDate(date.getDate() - i);
+        const key =
+            `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+        const value = key === today
+            ? getProgress()
+            : (data.history[key] ?? 0);
+        values.push({
+            key,
+            value,
+            label: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"][date.getDay()]
+        });
+    }
+    const average = Math.round(
+        values.reduce((sum, item) => sum + item.value, 0) / 7
+    );
+    document.getElementById(
+        "weeklyAverage"
+    ).textContent = average + "%";
+    values.forEach(item => {
+        const day = document.createElement("div");
+        day.className = "chart-day";
+        const percent = document.createElement("div");
+        percent.className = "bar-percent";
+        percent.textContent = item.value + "%";
+        const area = document.createElement("div");
+        area.className = "bar-area";
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.height = Math.max(3, item.value) + "%";
+        area.appendChild(bar);
+        const label = document.createElement("div");
+        label.className = "bar-label";
+        label.textContent = item.label;
+        day.appendChild(percent);
+        day.appendChild(area);
+        day.appendChild(label);
+        chart.appendChild(day);
+    });
+}
+/* ОБНОВЛЕНИЕ ВСЕГО ИНТЕРФЕЙСА */
+function renderAll() {
+    renderProgress();
+    renderTasks();
+    renderGoal();
+    renderStats();
+    renderStatsVisibility();
+}
+/* ЗАПУСК */
+document.getElementById("resetTime").value =
+    data.resetTime;
+checkDailyReset();
+renderAll();
+// Поддержка Telegram Mini App
+if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+}
+</script>
+</body>
+</html>
